@@ -1,55 +1,44 @@
-        var titles = new Array();
-        var texts = new Array();
-
-        function newTitle()
-        {
-            var name = "Title" + titles.length;
-            
-            if (name !== "Title0")
-            {
-                newHeading();
-                end;
-            }
-            
-            var newTitle = document.createElement('input');
-            newTitle.setAttribute("type", "text")
-            newTitle.setAttribute("placeholder", name)
-            newTitle.setAttribute("class", "title")
-            newTitle.setAttribute("id", name)
-            var workSpace = document.getElementById('workSpace');
-            titles.push(name)
-            
-            workSpace.appendChild(newTitle);
-            document.getElementById(name).focus()
-        }
-        
-        function newHeading()
-        {
-            var name = "Title" + titles.length;
-            
-            var newTitle = document.createElement('input');
-            newTitle.setAttribute("type", "text")
-            newTitle.setAttribute("placeholder", name)
-            newTitle.setAttribute("class", "def")
-            newTitle.setAttribute("id", name)
-            var workSpace = document.getElementById('workSpace');
-            titles.push(name)
-            
-            workSpace.appendChild(newTitle);
-            document.getElementById(name).focus()
-        }
-        
-        function newText()
-        {
-            var name = "Text" + texts.length;
-            
-            var newTitle = document.createElement('textarea');
-            newTitle.setAttribute("placeholder", name)
-            newTitle.setAttribute("class", "text")
-            newTitle.setAttribute("id", name)
-            var workSpace = document.getElementById('workSpace');
-            texts.push(name)
-            
-            workSpace.appendChild(newTitle);
-            document.getElementById(name).focus()
-        }  
+const addBtn = document.getElementById('add')  
+ const notes = JSON.parse(localStorage.getItem('notes'))  
+ if(notes) {  
+   notes.forEach(note => addNewNote(note))  
+ }  
+ addBtn.addEventListener('click', () => addNewNote())  
+ function addNewNote(text = '') {  
+   const note = document.createElement('div')  
+   note.classList.add('note')  
+   note.innerHTML = `  
+   <div class="tools">  
+     <button class="edit"><i class="fas fa-edit"></i></button>  
+     <button class="delete"><i class="fas fa-trash-alt"></i></button>  
+   </div>  
+   <div class="main ${text ? "" : "hidden"}"></div>  
+   <textarea class="${text ? "hidden" : ""}"></textarea>  
+   `  
+   const editBtn = note.querySelector('.edit')  
+   const deleteBtn = note.querySelector('.delete')  
+   const main = note.querySelector('.main')  
+   const textArea = note.querySelector('textarea')  
+   textArea.value = text  
+   main.innerHTML = marked(text)  
+   deleteBtn.addEventListener('click', () => {  
+     note.remove()  
+     updateLS()  
+   })  
+   editBtn.addEventListener('click', () => {  
+     main.classList.toggle('hidden')  
+     textArea.classList.toggle('hidden')  
+   })  
+   textArea.addEventListener('input', (e) => {  
+     const { value } = e.target  
+     main.innerHTML = marked(value)  
+     updateLS()  
+   })  
+   document.body.appendChild(note)  
+ }  
+ function updateLS() {  
+   const notesText = document.querySelectorAll('textarea')  
+   const notes = []  
+   notesText.forEach(note => notes.push(note.value))  
+   localStorage.setItem('notes', JSON.stringify(notes))  
+ }  
